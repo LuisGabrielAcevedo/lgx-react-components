@@ -1,0 +1,32 @@
+import React, { Component } from "react";
+import {
+  IDynamicFormMaterialData,
+  IDynamicFormModel,
+  IDynamicFormMainGroup,
+  IDynamicFormField
+} from "../../dynamic-form.interfaces";
+import RowFormComponent from "../row-form/form-row.component";
+
+class SimpleFormComponent extends Component<SimpleFormComponentProps, {}> {
+  render() {
+    const rows = (this.props.fields[0].fields as IDynamicFormField[][]).map(
+      (row: IDynamicFormField[], i: number) => (
+        <RowFormComponent
+          key={i}
+          fields={row}
+          model={this.props.model}
+          materialData={this.props.materialData}
+        />
+      )
+    );
+    return <div>{rows}</div>;
+  }
+}
+
+export default SimpleFormComponent;
+
+export interface SimpleFormComponentProps {
+  fields: IDynamicFormMainGroup[];
+  materialData: IDynamicFormMaterialData;
+  model: IDynamicFormModel;
+}

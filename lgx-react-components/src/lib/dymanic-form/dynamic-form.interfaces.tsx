@@ -11,7 +11,7 @@ export enum EDynamicFormFieldTypes {
   autocomplete = "AutocompleteComponent",
   asyncAutocomplete = "AsyncAutocompleteComponent",
   checkbox = "CheckboxComponent",
-  enum = "EnumSelectComponent",
+  enumSelect = "EnumSelectComponent",
   radioGroup = "RadioGroupComponent",
   select = "SelectComponent",
   switch = "SwitchComponent",
@@ -22,6 +22,12 @@ export enum EDynamicFormFieldTypes {
   numericField = "NumericFieldComponent",
   passwordField = "PasswordFieldComponent",
   stringList = "StringListComponent"
+}
+
+export enum EDynamicFormType {
+  panels = "PanelsFormComponent",
+  tabs = "TabsFormComponent",
+  steps = "StepsFormComponent"
 }
 
 export interface IDynamicFormMaterialData {
@@ -80,8 +86,8 @@ export enum EDynamicFormImageComponentMode {
 }
 
 export enum IDynamicFormLateralGroup {
-  left = "left",
-  right = "right"
+  left = "LEFT",
+  right = "RIGHT"
 }
 
 export interface IDynamicFormFormattedValidations {

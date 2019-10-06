@@ -1,26 +1,50 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from "react";
+import { ELgxSortDirection, ILgxResponse } from "lgx-axios-dev-tools";
+import { Product } from "./models/admin-system/products";
+import DynamicFormComponent from "./lib/dymanic-form/dynamic-form.component";
+import countryFields from "./metadata/admin-system/form/countries";
 
-const App: React.FC = () => {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+class App extends Component {
+  public page = 1;
+  public perPage = 10;
+  state = {
+    products: []
+  };
+
+  componentDidMount() {
+    this.loadProducts();
+  }
+
+  public async loadProducts() {
+    const resp: ILgxResponse = await Product.page(this.page)
+      .perPage(this.perPage)
+      .orderBy("updateAt", ELgxSortDirection.DESC)
+      .find();
+
+    this.setState({
+      products: resp.data
+    });
+  }
+
+  changePage(page: number) {
+    this.page = page;
+    this.loadProducts();
+  }
+
+  changePerPage(perPage: number) {
+    this.perPage = perPage;
+    this.loadProducts();
+  }
+
+  render() {
+    return (
+      <div className="App">
+        <DynamicFormComponent
+          fieldsConfig={countryFields}
+        ></DynamicFormComponent>
+      </div>
+    );
+  }
 }
 
 export default App;
