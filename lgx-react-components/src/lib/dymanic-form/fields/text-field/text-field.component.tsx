@@ -13,12 +13,13 @@ class TextFieldComponent extends DynamicFormFieldComponent {
   render() {
     const value = this.getValue();
 
-    const error = this.errorValue ? (
-      <FormHelperText error={this.errorValue}>
+    const error = this.errorValue() ? (
+      <FormHelperText error={this.errorValue()}>
         {this.errorMessage()}
       </FormHelperText>
     ) : null;
 
+    // console.log(this.errorValue());
     return (
       <FormControl fullWidth>
         <InputLabel htmlFor={this.label()}>{this.label()}</InputLabel>
@@ -28,7 +29,7 @@ class TextFieldComponent extends DynamicFormFieldComponent {
           onChange={this.handleChange}
           disabled={this.disableValue}
           onBlur={this.handleChange}
-          error={this.errorValue}
+          error={this.errorValue()}
         />
         {error}
       </FormControl>

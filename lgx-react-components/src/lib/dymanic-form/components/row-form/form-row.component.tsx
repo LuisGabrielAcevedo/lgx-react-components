@@ -3,7 +3,8 @@ import {
   IDynamicFormMaterialData,
   IDynamicFormModel,
   IDynamicFormField,
-  TDynamicFormUpdateModel
+  TDynamicFormUpdateModel,
+  IDynamicFormValidationErrors
 } from "../../dynamic-form.interfaces";
 import SelectDynamicFormFieldComponent from "../select-dynamic-form-field/select-dynamic-form-field.component";
 import Grid from "@material-ui/core/Grid";
@@ -28,6 +29,7 @@ class RowFormComponent extends Component<RowFormComponentProps, {}> {
             model={this.props.model}
             materialData={this.props.materialData}
             updateModel={this.props.updateModel}
+            errors={this.props.errors}
           />
         </Grid>
       )
@@ -47,4 +49,5 @@ export interface RowFormComponentProps {
   materialData: IDynamicFormMaterialData;
   model: IDynamicFormModel;
   updateModel: TDynamicFormUpdateModel;
+  errors: IDynamicFormValidationErrors;
 }

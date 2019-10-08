@@ -6,7 +6,8 @@ import {
   IDynamicFormMainGroup,
   IDynamicFormFormatFieldsResponse,
   IDynamicFormLateralGroup,
-  EDynamicFormType
+  EDynamicFormType,
+  IDynamicFormValidationErrors
 } from "./dynamic-form.interfaces";
 import chunk from "lodash/chunk";
 import groupBy from "lodash/groupBy";
@@ -30,7 +31,8 @@ class DynamicFormMixinComponent extends Component<
       groupIndexes: {},
       mainGroupsFormatted: [],
       activeGroup: 0,
-      currentModel: {}
+      currentModel: {},
+      errors: {}
     };
   }
 
@@ -190,4 +192,5 @@ export interface IDynamicFormComponentState {
   mainGroupsFormatted: IDynamicFormMainGroup[];
   activeGroup: number;
   currentModel: IDynamicFormModel;
+  errors: IDynamicFormValidationErrors;
 }

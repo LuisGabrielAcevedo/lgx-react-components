@@ -4,7 +4,8 @@ import {
   IDynamicFormField,
   IDynamicFormMaterialData,
   IDynamicFormModel,
-  TDynamicFormUpdateModel
+  TDynamicFormUpdateModel,
+  IDynamicFormValidationErrors
 } from "../../dynamic-form.interfaces";
 import AsyncAutocompleteComponent from "../../fields/async-autocomplete/async-autocomplete.component";
 import AutocompleteComponent from "../../fields/autocomplete/autocomplete.component";
@@ -47,6 +48,7 @@ class SelectDynamicFormFieldComponent extends Component<
 
   render() {
     const Component = this.component();
+    // console.log(this.props);
     return (
       <div>
         <Component
@@ -54,6 +56,7 @@ class SelectDynamicFormFieldComponent extends Component<
           materialData={this.props.materialData}
           model={this.props.model}
           updateModel={this.props.updateModel}
+          errors={this.props.errors}
         />
       </div>
     );
@@ -67,4 +70,5 @@ export interface ISelectDynamicFormFieldComponentProps {
   materialData: IDynamicFormMaterialData;
   model: IDynamicFormModel;
   updateModel: TDynamicFormUpdateModel;
+  errors: IDynamicFormValidationErrors;
 }

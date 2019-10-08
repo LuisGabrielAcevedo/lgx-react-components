@@ -15,10 +15,9 @@ class DynamicFormFieldComponent extends Component<
 > {
   public visibleValue = true;
   public disableValue = false;
-  public errorValue = false;
+  public errorValue = () => !!this.props.errors[this.key()];
   public validations: TDynamicFormValidatorFn[] = [];
   public errorMessages: { [key: string]: any } = {};
-  public errors: IDynamicFormValidationErrors = {};
   public key = () => this.props.field.key;
   public model = () => this.props.model;
   public value = () => this.props.model[this.key()];
@@ -35,11 +34,13 @@ class DynamicFormFieldComponent extends Component<
   public multiple = () =>
     this.props.field.options && this.props.field.options.multiple;
   public associationText = () =>
-    (this.props.field.options && this.props.field.options.associationText) ||
-    "text";
+    this.props.field.options && this.props.field.options.associationText
+      ? this.props.field.options.associationText
+      : "text";
   public associationValue = () =>
-    (this.props.field.options && this.props.field.options.associationValue) ||
-    "value";
+    this.props.field.options && this.props.field.options.associationValue
+      ? this.props.field.options.associationValue
+      : "value";
   public dependValue = () =>
     this.props.field.options && this.props.field.options.depend;
   public hasDisableCondition = () =>
@@ -84,11 +85,11 @@ class DynamicFormFieldComponent extends Component<
   };
 
   public updateModel(value: any) {
-    this.validate(value);
-    this.props.updateModel(this.key(), value, this.errorValue);
+    const errors: IDynamicFormValidationErrors = this.validate(value);
+    this.props.updateModel(this.key(), value, errors);
   }
 
-  public validate(value: any) {
+  public validate(value: any): IDynamicFormValidationErrors {
     let errors: IDynamicFormValidationErrors = {};
     this.validations.forEach(vaidation => {
       if (vaidation(value, this.props.model)) {
@@ -99,8 +100,7 @@ class DynamicFormFieldComponent extends Component<
         errors = { ...errors, ...error };
       }
     });
-    this.errors = errors;
-    this.errorValue = !!Object.keys(this.errors).length;
+    return errors;
   }
 
   public formatValidations(): void {
@@ -117,7 +117,7 @@ class DynamicFormFieldComponent extends Component<
   }
 
   public errorMessage(): string {
-    const error: string = Object.keys(this.errors)[0];
+    const error: string = Object.keys(this.props.errors[this.key()])[0];
     return this.errorMessages[error];
   }
 }
@@ -130,6 +130,7 @@ export interface IDynamicFormFieldComponentProps {
   model: IDynamicFormModel;
   updateModel: TDynamicFormUpdateModel;
   updateAndValidate: boolean;
+  errors: IDynamicFormValidationErrors;
 }
 
 export interface IDynamicFormFieldComponentState {

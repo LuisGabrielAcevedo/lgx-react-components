@@ -11,7 +11,11 @@ const countryFields: IDynamicFormField[] = [
     name: "Name",
     key: "name",
     component: EDynamicFormFieldTypes.textField,
-    validators: [DynamicFormValidators.required()],
+    validators: [
+      DynamicFormValidators.required({
+        message: "The field name is required"
+      })
+    ],
     flexConfig: {
       row: 1,
       flex: 6
@@ -39,7 +43,11 @@ const countryFields: IDynamicFormField[] = [
     name: "Languages",
     key: "languages",
     component: EDynamicFormFieldTypes.enumSelect,
-    validators: [DynamicFormValidators.required()],
+    validators: [
+      DynamicFormValidators.required({
+        message: "The field languages is required"
+      })
+    ],
     options: {
       fieldOptions: async () => {
         const resp: ILgxResponse = await AdminSystem.urlParam(

@@ -1,7 +1,7 @@
 export type TDynamicFormUpdateModel = (
   key: string,
   value: any,
-  valid: boolean
+  valid: IDynamicFormValidationErrors
 ) => void;
 export type TDynamicFormVisibleCallback = (arg: IDynamicFormModel) => boolean;
 export type TDynamicFormDisableCallback = (arg: IDynamicFormModel) => boolean;

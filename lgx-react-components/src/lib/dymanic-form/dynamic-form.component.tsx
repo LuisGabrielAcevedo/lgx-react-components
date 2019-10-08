@@ -6,7 +6,8 @@ import {
   IDynamicFormFormatFieldsResponse,
   EDynamicFormType,
   IDynamicFormModel,
-  IDynamicFormResponse
+  IDynamicFormResponse,
+  IDynamicFormValidationErrors
 } from "./dynamic-form.interfaces";
 import PanelsFormComponent from "./components/panels-form/panels-form.component";
 import StepsFormComponent from "./components/steps-form/steps-form.component";
@@ -28,7 +29,7 @@ class DynamicFormComponent extends DynamicFormMixinComponent {
   public async submit(): Promise<IDynamicFormResponse> {
     const currentModel: IDynamicFormModel = cloneDeep(this.state.currentModel!);
     return {
-      valid: true,
+      valid: !!Object.keys(this.state.errors),
       model: currentModel
     };
   }
@@ -46,11 +47,20 @@ class DynamicFormComponent extends DynamicFormMixinComponent {
     return components[this.props.formType!];
   }
 
-  private updateModel(key: string, value: any) {
+  private updateModel(
+    key: string,
+    value: any,
+    fieldErrors: IDynamicFormValidationErrors
+  ) {
+    console.log(fieldErrors);
     let currentModel: IDynamicFormModel = cloneDeep(this.state.currentModel!);
+    let errors: IDynamicFormValidationErrors = cloneDeep(this.state.errors!);
     if (!Object.keys(currentModel).length) currentModel = this.defaultModel();
     currentModel = set(currentModel!, key!, value);
-    this.setState({ currentModel });
+    Object.keys(fieldErrors).length
+      ? (errors[key] = fieldErrors)
+      : delete errors[key];
+    this.setState({ currentModel, errors });
   }
 
   render() {
@@ -73,6 +83,7 @@ class DynamicFormComponent extends DynamicFormMixinComponent {
           model={model}
           materialData={this.props.materialData!}
           updateModel={this.updateModel.bind(this)}
+          errors={this.state.errors}
         ></FormTypeComponent>
       </div>
     );

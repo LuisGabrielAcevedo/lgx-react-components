@@ -4,7 +4,8 @@ import {
   IDynamicFormModel,
   IDynamicFormMainGroup,
   IDynamicFormField,
-  TDynamicFormUpdateModel
+  TDynamicFormUpdateModel,
+  IDynamicFormValidationErrors
 } from "../../dynamic-form.interfaces";
 import RowFormComponent from "../row-form/form-row.component";
 
@@ -18,6 +19,7 @@ class SimpleFormComponent extends Component<SimpleFormComponentProps, {}> {
           model={this.props.model}
           materialData={this.props.materialData}
           updateModel={this.props.updateModel}
+          errors={this.props.errors}
         />
       )
     );
@@ -32,4 +34,5 @@ export interface SimpleFormComponentProps {
   materialData: IDynamicFormMaterialData;
   model: IDynamicFormModel;
   updateModel: TDynamicFormUpdateModel;
+  errors: IDynamicFormValidationErrors;
 }
