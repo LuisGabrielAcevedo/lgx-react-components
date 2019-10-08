@@ -5,8 +5,7 @@ import {
   IDynamicFormModel,
   IDynamicFormOption,
   TDynamicFormUpdateModel,
-  TDynamicFormValidatorFn,
-  IDynamicFormValidationErrors
+  IDynamicFormGroup
 } from "../dynamic-form.interfaces";
 
 class DynamicFormFieldComponent extends Component<
@@ -15,12 +14,13 @@ class DynamicFormFieldComponent extends Component<
 > {
   public visibleValue = true;
   public disableValue = false;
-  public errorValue = () => !!this.props.errors[this.key()];
-  public validations: TDynamicFormValidatorFn[] = [];
-  public errorMessages: { [key: string]: any } = {};
   public key = () => this.props.field.key;
-  public model = () => this.props.model;
-  public value = () => this.props.model[this.key()];
+  public model = () => this.props.form.value;
+  public control = () => this.props.form.controls[this.key()];
+  public errors = () => this.control().errors;
+  public errorMessages = () => this.control().errorMessages;
+  public errorValue = () => !this.control().valid;
+  public value = () => this.control().value;
   public appearance = () => this.props.materialData.appearance || "standard";
   public floatLabel = () => this.props.materialData.floatLabel || "";
   public label = () =>
@@ -53,7 +53,7 @@ class DynamicFormFieldComponent extends Component<
       options: [],
       loading: false
     };
-    this.formatValidations();
+    console.log(this.props);
   }
 
   public visible(currentModel: IDynamicFormModel): void {
@@ -85,40 +85,12 @@ class DynamicFormFieldComponent extends Component<
   };
 
   public updateModel(value: any) {
-    const errors: IDynamicFormValidationErrors = this.validate(value);
-    this.props.updateModel(this.key(), value, errors);
-  }
-
-  public validate(value: any): IDynamicFormValidationErrors {
-    let errors: IDynamicFormValidationErrors = {};
-    this.validations.forEach(vaidation => {
-      if (vaidation(value, this.props.model)) {
-        const error: IDynamicFormValidationErrors = vaidation(
-          value,
-          this.props.model
-        )!;
-        errors = { ...errors, ...error };
-      }
-    });
-    return errors;
-  }
-
-  public formatValidations(): void {
-    if (this.props.field.validators) {
-      let errorMessages: { [key: string]: any } = {};
-      let dynamicFormFormattedValidations: TDynamicFormValidatorFn[] = [];
-      this.props.field.validators.forEach(validation => {
-        dynamicFormFormattedValidations.push(validation.validate());
-        errorMessages[validation.name.toLowerCase()] = validation.message;
-      });
-      this.errorMessages = errorMessages;
-      this.validations = dynamicFormFormattedValidations;
-    }
+    this.props.updateModel(this.key(), value);
   }
 
   public errorMessage(): string {
-    const error: string = Object.keys(this.props.errors[this.key()])[0];
-    return this.errorMessages[error];
+    const error: string = Object.keys(this.errors()!)[0];
+    return this.errorMessages()![error];
   }
 }
 
@@ -127,10 +99,8 @@ export default DynamicFormFieldComponent;
 export interface IDynamicFormFieldComponentProps {
   field: IDynamicFormField;
   materialData: IDynamicFormMaterialData;
-  model: IDynamicFormModel;
+  form: IDynamicFormGroup;
   updateModel: TDynamicFormUpdateModel;
-  updateAndValidate: boolean;
-  errors: IDynamicFormValidationErrors;
 }
 
 export interface IDynamicFormFieldComponentState {

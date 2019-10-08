@@ -14,7 +14,7 @@ class EnumSelectComponent extends DynamicFormFieldComponent {
   }
 
   private getValue() {
-    return this.value() || (this.multiple() ? [] : null);
+    return this.value() || (this.multiple() ? [] : "");
   }
 
   render() {
@@ -41,10 +41,12 @@ class EnumSelectComponent extends DynamicFormFieldComponent {
         >
           {this.state.options.map((option, i: number) => (
             <MenuItem key={i} value={option[this.associationValue()]}>
-              <Checkbox
-                color="primary"
-                checked={value.indexOf(option[this.associationValue()]) > -1}
-              />
+              {this.multiple() ? (
+                <Checkbox
+                  color="primary"
+                  checked={value.indexOf(option[this.associationValue()]) > -1}
+                />
+              ) : null}
               <ListItemText primary={option[this.associationText()]} />
             </MenuItem>
           ))}

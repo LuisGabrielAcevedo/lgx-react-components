@@ -1,13 +1,11 @@
 import React, { Component } from "react";
 import DynamicFormComponent from "./lib/dymanic-form/dynamic-form.component";
-import countryFields from "./metadata/admin-system/form/countries";
-// import { Country } from "./models/admin-system/countries";
-// import { ILgxResponse } from "lgx-axios-dev-tools";
+import userFields from "./metadata/admin-system/form/users";
 
 class App extends Component {
   public form!: DynamicFormComponent;
   state = {
-    country: {}
+    user: {}
   };
 
   componentDidMount() {
@@ -16,6 +14,7 @@ class App extends Component {
 
   async loadCountry() {
     // const resp: ILgxResponse = await Country.findById(
+    //   // @ts-ignore
     //   "5d80f84db1c0940017f88dfa"
     // );
     // this.setState({ country: resp.data });
@@ -32,8 +31,8 @@ class App extends Component {
           ref={form => {
             this.form = form!;
           }}
-          fieldsConfig={countryFields}
-          model={this.state.country}
+          fieldsConfig={userFields}
+          model={this.state.user}
         ></DynamicFormComponent>
       </div>
     );

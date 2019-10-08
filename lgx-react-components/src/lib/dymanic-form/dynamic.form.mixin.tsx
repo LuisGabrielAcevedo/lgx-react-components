@@ -7,11 +7,18 @@ import {
   IDynamicFormFormatFieldsResponse,
   IDynamicFormLateralGroup,
   EDynamicFormType,
-  IDynamicFormValidationErrors
+  IDynamicFormValidationErrors,
+  IDynamicFormGroup,
+  IDynamicFormControl,
+  defaultDynamicFormControl,
+  TDynamicFormValidatorFn,
+  IDynamicFormFormattedValidations,
+  defaultDynamicFormGroup
 } from "./dynamic-form.interfaces";
 import chunk from "lodash/chunk";
 import groupBy from "lodash/groupBy";
 import set from "lodash/set";
+import cloneDeep from "lodash/cloneDeep";
 
 class DynamicFormMixinComponent extends Component<
   IDynamicFormComponentProps,
@@ -28,22 +35,40 @@ class DynamicFormMixinComponent extends Component<
   constructor(public props: IDynamicFormComponentProps) {
     super(props);
     this.state = {
-      groupIndexes: {},
       mainGroupsFormatted: [],
       activeGroup: 0,
-      currentModel: {},
-      errors: {}
+      form: cloneDeep(defaultDynamicFormGroup)
     };
   }
 
   public formatFieldsAction(
     fieldsConfig: IDynamicFormField[],
+    currentModel: IDynamicFormModel,
     columns?: number
   ): IDynamicFormFormatFieldsResponse {
     let mainGroupsFormatted: IDynamicFormMainGroup[] = [];
+    let model: IDynamicFormModel = {};
+    let formGroup: IDynamicFormGroup = cloneDeep(defaultDynamicFormGroup);
     let order: number = 0;
-    let groupIndexes: { [key: string]: number } = {};
     fieldsConfig.forEach(field => {
+      let formControl: IDynamicFormControl = cloneDeep(
+        defaultDynamicFormControl
+      );
+      formControl.key = field.key;
+      formControl.value =
+        currentModel![field.key] || field.defaultValue || null;
+      if (field.validators) {
+        const formattedValidationsResp: IDynamicFormFormattedValidations = this.formatValidations(
+          field
+        );
+        formControl.validators = formattedValidationsResp.validations;
+        formControl.errorMessages = formattedValidationsResp.errorMessages;
+      }
+
+      formGroup.controls[field.key] = formControl;
+
+      model = set(model, field.key!, field.defaultValue || null);
+
       const tab: string | undefined = field.mainGroup;
       const name: string = tab || "Default tab";
       const group: string | undefined = field.flexConfig
@@ -60,7 +85,7 @@ class DynamicFormMixinComponent extends Component<
         } else {
           (item.fields as IDynamicFormField[]).push(field);
         }
-        groupIndexes[field.key] = item.order!;
+        formControl.index = item.order!;
       } else {
         const tabNewItem: IDynamicFormMainGroup = {
           order,
@@ -76,15 +101,16 @@ class DynamicFormMixinComponent extends Component<
         } else {
           (tabNewItem.fields as IDynamicFormField[]).push(field);
         }
-        groupIndexes[field.key] = order;
+        formControl.index = order;
         order++;
         mainGroupsFormatted.push(tabNewItem);
       }
     });
     mainGroupsFormatted = this.buildColumns(mainGroupsFormatted, columns);
+    formGroup.value = Object.keys(currentModel!).length ? currentModel! : model;
     return {
       mainGroupsFormatted,
-      groupIndexes
+      formGroup
     };
   }
 
@@ -165,14 +191,61 @@ class DynamicFormMixinComponent extends Component<
     return chunk(fields, columns!);
   }
 
-  protected defaultModel(): IDynamicFormModel {
-    let model: IDynamicFormModel = {};
-    this.props.fieldsConfig.forEach(field => {
-      if (field.key) {
-        model = set(model, field.key!, field.defaultValue || null);
+  private formatValidations(
+    field: IDynamicFormField
+  ): IDynamicFormFormattedValidations {
+    let errorMessages: IDynamicFormValidationErrors = {};
+    let dynamicFormFormattedValidations: TDynamicFormValidatorFn[] = [];
+    field.validators!.forEach(validation => {
+      dynamicFormFormattedValidations.push(validation.validate());
+      errorMessages[validation.name.toLowerCase()] = validation.message;
+    });
+    return {
+      validations: dynamicFormFormattedValidations,
+      errorMessages
+    };
+  }
+
+  public validateAll(form: IDynamicFormGroup): IDynamicFormGroup {
+    Object.keys(form.controls).forEach(key => {
+      form = this.validateControl(form, key);
+    });
+    this.setState({ form });
+    return form;
+  }
+
+  public validateControl(
+    form: IDynamicFormGroup,
+    key: string
+  ): IDynamicFormGroup {
+    const errors: IDynamicFormValidationErrors = this.validate(
+      form.controls[key],
+      form.value
+    );
+    form.controls[key].valid = !Object.keys(errors).length;
+    form.controls[key].errors = errors;
+    form.invalidControls = Object.keys(errors).length
+      ? [...form.invalidControls, key]
+      : form.invalidControls.filter(controlkey => controlkey !== key);
+    form.valid = !form.invalidControls.length;
+    return form;
+  }
+
+  public validate(
+    control: IDynamicFormControl,
+    model: IDynamicFormModel
+  ): IDynamicFormValidationErrors {
+    let errors: IDynamicFormValidationErrors = {};
+    control.validators.forEach(vaidation => {
+      if (vaidation(control.value, model)) {
+        const error: IDynamicFormValidationErrors = vaidation(
+          control.value,
+          model
+        )!;
+        errors = { ...errors, ...error };
       }
     });
-    return model;
+    return errors;
   }
 }
 
@@ -188,9 +261,7 @@ export interface IDynamicFormComponentProps {
 }
 
 export interface IDynamicFormComponentState {
-  groupIndexes: object;
   mainGroupsFormatted: IDynamicFormMainGroup[];
   activeGroup: number;
-  currentModel: IDynamicFormModel;
-  errors: IDynamicFormValidationErrors;
+  form: IDynamicFormGroup;
 }

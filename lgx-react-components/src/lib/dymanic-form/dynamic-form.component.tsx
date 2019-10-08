@@ -7,35 +7,55 @@ import {
   EDynamicFormType,
   IDynamicFormModel,
   IDynamicFormResponse,
-  IDynamicFormValidationErrors
+  IDynamicFormGroup
 } from "./dynamic-form.interfaces";
 import PanelsFormComponent from "./components/panels-form/panels-form.component";
 import StepsFormComponent from "./components/steps-form/steps-form.component";
 import TabsFormComponent from "./components/tabs-form/tabs-form.component";
 import SimpleFormComponent from "./components/simple-form/simple-form-component";
 import cloneDeep from "lodash/cloneDeep";
-import set from "lodash/set";
+// import set from "lodash/set";
 
 class DynamicFormComponent extends DynamicFormMixinComponent {
   componentDidMount() {
-    this.formatFields();
+    const formatFieldResponse: IDynamicFormFormatFieldsResponse = this.formatFields(
+      this.props.model!
+    );
+    this.setState({
+      mainGroupsFormatted: formatFieldResponse.mainGroupsFormatted,
+      form: formatFieldResponse.formGroup
+    });
   }
 
   componentWillUpdate(nextProps: IDynamicFormComponentProps) {
-    if (this.props.model !== nextProps.model)
-      this.setState({ currentModel: nextProps.model! });
+    if (this.props.model !== nextProps.model) {
+      const formatFieldResponse: IDynamicFormFormatFieldsResponse = this.formatFields(
+        nextProps.model!
+      );
+      this.setState({
+        mainGroupsFormatted: formatFieldResponse.mainGroupsFormatted,
+        form: formatFieldResponse.formGroup
+      });
+    }
   }
 
   public async submit(): Promise<IDynamicFormResponse> {
-    const currentModel: IDynamicFormModel = cloneDeep(this.state.currentModel!);
+    let form: IDynamicFormGroup = cloneDeep(this.state.form!);
+    form = this.validateAll(form);
     return {
-      valid: !!Object.keys(this.state.errors),
-      model: currentModel
+      valid: form.valid,
+      model: form.value
     };
   }
 
-  private formatFields(): IDynamicFormFormatFieldsResponse {
-    return this.formatFieldsAction(this.props.fieldsConfig, this.props.columns);
+  private formatFields(
+    model: IDynamicFormModel
+  ): IDynamicFormFormatFieldsResponse {
+    return this.formatFieldsAction(
+      this.props.fieldsConfig,
+      model,
+      this.props.columns
+    );
   }
 
   private getComponent() {
@@ -47,46 +67,29 @@ class DynamicFormComponent extends DynamicFormMixinComponent {
     return components[this.props.formType!];
   }
 
-  private updateModel(
-    key: string,
-    value: any,
-    fieldErrors: IDynamicFormValidationErrors
-  ) {
-    console.log(fieldErrors);
-    let currentModel: IDynamicFormModel = cloneDeep(this.state.currentModel!);
-    let errors: IDynamicFormValidationErrors = cloneDeep(this.state.errors!);
-    if (!Object.keys(currentModel).length) currentModel = this.defaultModel();
-    currentModel = set(currentModel!, key!, value);
-    Object.keys(fieldErrors).length
-      ? (errors[key] = fieldErrors)
-      : delete errors[key];
-    this.setState({ currentModel, errors });
+  private updateModel(key: string, value: any) {
+    let form: IDynamicFormGroup = cloneDeep(this.state.form!);
+    form.controls[key].value = value;
+    form = this.validateControl(form, key);
+    this.setState({ form });
   }
 
   render() {
-    const formatFieldResponse: IDynamicFormFormatFieldsResponse = this.formatFields();
-
     const FormTypeComponent =
-      formatFieldResponse.mainGroupsFormatted.length > 1
+      this.state.mainGroupsFormatted.length > 1
         ? this.getComponent()
         : SimpleFormComponent;
 
-    const model: IDynamicFormModel = !Object.keys(this.state.currentModel)
-      .length
-      ? this.defaultModel()
-      : this.state.currentModel;
+    const form = this.state.mainGroupsFormatted.length ? (
+      <FormTypeComponent
+        groups={this.state.mainGroupsFormatted}
+        form={this.state.form}
+        materialData={this.props.materialData!}
+        updateModel={this.updateModel.bind(this)}
+      ></FormTypeComponent>
+    ) : null;
 
-    return (
-      <div>
-        <FormTypeComponent
-          fields={formatFieldResponse.mainGroupsFormatted}
-          model={model}
-          materialData={this.props.materialData!}
-          updateModel={this.updateModel.bind(this)}
-          errors={this.state.errors}
-        ></FormTypeComponent>
-      </div>
-    );
+    return <div>{form}</div>;
   }
 }
 

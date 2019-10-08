@@ -1,25 +1,23 @@
 import React, { Component } from "react";
 import {
   IDynamicFormMaterialData,
-  IDynamicFormModel,
   IDynamicFormMainGroup,
   IDynamicFormField,
   TDynamicFormUpdateModel,
-  IDynamicFormValidationErrors
+  IDynamicFormGroup
 } from "../../dynamic-form.interfaces";
 import RowFormComponent from "../row-form/form-row.component";
 
 class SimpleFormComponent extends Component<SimpleFormComponentProps, {}> {
   render() {
-    const rows = (this.props.fields[0].fields as IDynamicFormField[][]).map(
+    const rows = (this.props.groups[0].fields as IDynamicFormField[][]).map(
       (row: IDynamicFormField[], i: number) => (
         <RowFormComponent
           key={i}
           fields={row}
-          model={this.props.model}
+          form={this.props.form}
           materialData={this.props.materialData}
           updateModel={this.props.updateModel}
-          errors={this.props.errors}
         />
       )
     );
@@ -30,9 +28,8 @@ class SimpleFormComponent extends Component<SimpleFormComponentProps, {}> {
 export default SimpleFormComponent;
 
 export interface SimpleFormComponentProps {
-  fields: IDynamicFormMainGroup[];
+  groups: IDynamicFormMainGroup[];
   materialData: IDynamicFormMaterialData;
-  model: IDynamicFormModel;
+  form: IDynamicFormGroup;
   updateModel: TDynamicFormUpdateModel;
-  errors: IDynamicFormValidationErrors;
 }

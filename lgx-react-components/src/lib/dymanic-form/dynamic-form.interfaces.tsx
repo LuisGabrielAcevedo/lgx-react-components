@@ -1,8 +1,4 @@
-export type TDynamicFormUpdateModel = (
-  key: string,
-  value: any,
-  valid: IDynamicFormValidationErrors
-) => void;
+export type TDynamicFormUpdateModel = (key: string, value: any) => void;
 export type TDynamicFormVisibleCallback = (arg: IDynamicFormModel) => boolean;
 export type TDynamicFormDisableCallback = (arg: IDynamicFormModel) => boolean;
 export interface IDynamicFormValidationErrors {
@@ -13,9 +9,39 @@ export type TDynamicFormValidatorFn = (
   model: IDynamicFormModel
 ) => IDynamicFormValidationErrors | null;
 export type TDynamicFormValidatorCallback = () => TDynamicFormValidatorFn;
-// export type TDynamicFormAsyncValidatorCallback = (
-//   control: AbstractControl
-// ) => Observable<ValidationErrors>;
+
+export interface IDynamicFormControl {
+  value: any;
+  key: string;
+  valid: boolean;
+  validators: TDynamicFormValidatorFn[];
+  errorMessages?: IDynamicFormValidationErrors;
+  errors?: IDynamicFormValidationErrors;
+  index?: number;
+}
+
+export const defaultDynamicFormControl: IDynamicFormControl = {
+  value: null,
+  key: "",
+  valid: true,
+  validators: []
+};
+
+export const defaultDynamicFormGroup: IDynamicFormGroup = {
+  controls: {},
+  value: {},
+  valid: true,
+  invalidControls: []
+};
+
+export interface IDynamicFormGroup {
+  controls: {
+    [key: string]: IDynamicFormControl;
+  };
+  value: IDynamicFormModel;
+  valid: boolean;
+  invalidControls: string[];
+}
 
 export enum EDynamicFormFieldTypes {
   autocomplete = "AutocompleteComponent",
@@ -101,7 +127,7 @@ export enum IDynamicFormLateralGroup {
 
 export interface IDynamicFormFormattedValidations {
   validations: any[];
-  errorMessages: object;
+  errorMessages: IDynamicFormValidationErrors;
 }
 
 export interface IDynamicFormResponse {
@@ -113,5 +139,5 @@ export interface IDynamicFormResponse {
 
 export interface IDynamicFormFormatFieldsResponse {
   mainGroupsFormatted: IDynamicFormMainGroup[];
-  groupIndexes: object;
+  formGroup: IDynamicFormGroup;
 }
