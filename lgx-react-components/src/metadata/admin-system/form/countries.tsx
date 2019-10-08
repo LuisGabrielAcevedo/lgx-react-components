@@ -4,15 +4,17 @@ import {
 } from "../../../lib/dymanic-form/dynamic-form.interfaces";
 import AdminSystem from "../../../models/admin-system/admin-system";
 import { ILgxResponse } from "lgx-axios-dev-tools";
+import DynamicFormValidators from "../../../lib/dymanic-form/validation/dynamic-form-validators";
 
 const countryFields: IDynamicFormField[] = [
   {
     name: "Name",
     key: "name",
     component: EDynamicFormFieldTypes.textField,
+    validators: [DynamicFormValidators.required()],
     flexConfig: {
       row: 1,
-      flex: 50
+      flex: 6
     }
   },
   {
@@ -21,7 +23,7 @@ const countryFields: IDynamicFormField[] = [
     component: EDynamicFormFieldTypes.textField,
     flexConfig: {
       row: 1,
-      flex: 50
+      flex: 6
     }
   },
   {
@@ -30,13 +32,14 @@ const countryFields: IDynamicFormField[] = [
     component: EDynamicFormFieldTypes.textField,
     flexConfig: {
       row: 2,
-      flex: 50
+      flex: 6
     }
   },
   {
     name: "Languages",
     key: "languages",
     component: EDynamicFormFieldTypes.enumSelect,
+    validators: [DynamicFormValidators.required()],
     options: {
       fieldOptions: async () => {
         const resp: ILgxResponse = await AdminSystem.urlParam(
@@ -53,7 +56,7 @@ const countryFields: IDynamicFormField[] = [
     },
     flexConfig: {
       row: 2,
-      flex: 50
+      flex: 6
     }
   },
   {
@@ -76,7 +79,7 @@ const countryFields: IDynamicFormField[] = [
     },
     flexConfig: {
       row: 3,
-      flex: 50
+      flex: 6
     }
   }
 ];

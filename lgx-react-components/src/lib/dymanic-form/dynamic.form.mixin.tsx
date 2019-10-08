@@ -10,6 +10,7 @@ import {
 } from "./dynamic-form.interfaces";
 import chunk from "lodash/chunk";
 import groupBy from "lodash/groupBy";
+import set from "lodash/set";
 
 class DynamicFormMixinComponent extends Component<
   IDynamicFormComponentProps,
@@ -19,7 +20,8 @@ class DynamicFormMixinComponent extends Component<
     columns: 3,
     fieldsConfig: [],
     formType: EDynamicFormType.tabs,
-    materialData: {}
+    materialData: {},
+    model: {}
   };
 
   constructor(public props: IDynamicFormComponentProps) {
@@ -28,13 +30,12 @@ class DynamicFormMixinComponent extends Component<
       groupIndexes: {},
       mainGroupsFormatted: [],
       activeGroup: 0,
-      form: {}
+      currentModel: {}
     };
   }
 
   public formatFieldsAction(
     fieldsConfig: IDynamicFormField[],
-    form: any,
     columns?: number
   ): IDynamicFormFormatFieldsResponse {
     let mainGroupsFormatted: IDynamicFormMainGroup[] = [];
@@ -95,7 +96,7 @@ class DynamicFormMixinComponent extends Component<
         if (!(group.fields as IDynamicFormField[])[0].flexConfig) {
           (group.fields as IDynamicFormField[])[0].flexConfig = {};
         }
-        (group.fields as IDynamicFormField[])[0].flexConfig!.flex = 100;
+        (group.fields as IDynamicFormField[])[0].flexConfig!.flex = 12;
         group.fields = [group.fields as IDynamicFormField[]];
       } else {
         group.fields = columns
@@ -139,7 +140,19 @@ class DynamicFormMixinComponent extends Component<
     fields: IDynamicFormField[],
     columns: number
   ): IDynamicFormField[][] {
-    const flex: number = Math.floor(100 / columns!);
+    const flex = Math.floor(12 / columns!) as
+      | 1
+      | 2
+      | 3
+      | 4
+      | 5
+      | 6
+      | 7
+      | 8
+      | 9
+      | 10
+      | 11
+      | 12;
     fields.map(fieldItem => {
       if (!fieldItem.flexConfig) {
         fieldItem.flexConfig = {};
@@ -148,6 +161,16 @@ class DynamicFormMixinComponent extends Component<
       return fieldItem;
     });
     return chunk(fields, columns!);
+  }
+
+  protected defaultModel(): IDynamicFormModel {
+    let model: IDynamicFormModel = {};
+    this.props.fieldsConfig.forEach(field => {
+      if (field.key) {
+        model = set(model, field.key!, field.defaultValue || null);
+      }
+    });
+    return model;
   }
 }
 
@@ -166,5 +189,5 @@ export interface IDynamicFormComponentState {
   groupIndexes: object;
   mainGroupsFormatted: IDynamicFormMainGroup[];
   activeGroup: number;
-  form: {};
+  currentModel: IDynamicFormModel;
 }

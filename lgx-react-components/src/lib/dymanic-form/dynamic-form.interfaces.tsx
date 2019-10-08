@@ -1,8 +1,18 @@
-// import { Observable } from "rxjs";
-
+export type TDynamicFormUpdateModel = (
+  key: string,
+  value: any,
+  valid: boolean
+) => void;
 export type TDynamicFormVisibleCallback = (arg: IDynamicFormModel) => boolean;
 export type TDynamicFormDisableCallback = (arg: IDynamicFormModel) => boolean;
-// export type TDynamicFormValidatorCallback = (form: FormGroup) => ValidatorFn;
+export interface IDynamicFormValidationErrors {
+  [key: string]: any;
+}
+export type TDynamicFormValidatorFn = (
+  value: any,
+  model: IDynamicFormModel
+) => IDynamicFormValidationErrors | null;
+export type TDynamicFormValidatorCallback = () => TDynamicFormValidatorFn;
 // export type TDynamicFormAsyncValidatorCallback = (
 //   control: AbstractControl
 // ) => Observable<ValidationErrors>;
@@ -31,7 +41,7 @@ export enum EDynamicFormType {
 }
 
 export interface IDynamicFormMaterialData {
-  appearance?: string;
+  appearance?: "standard" | "outlined" | "filled";
   floatLabel?: string;
 }
 
@@ -45,7 +55,7 @@ export interface IDynamicFormField {
   flexConfig?: {
     rowTitle?: string;
     row?: number;
-    flex?: number;
+    flex?: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
     group?: IDynamicFormLateralGroup;
   };
   validators?: any[];
@@ -76,8 +86,7 @@ export interface IDynamicFormModel {
 }
 
 export interface IDynamicFormOption {
-  value: any;
-  text: any;
+  [key: string]: any;
 }
 
 export enum EDynamicFormImageComponentMode {

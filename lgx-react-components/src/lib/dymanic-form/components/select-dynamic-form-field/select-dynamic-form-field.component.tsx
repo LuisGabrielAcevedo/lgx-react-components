@@ -3,7 +3,8 @@ import {
   EDynamicFormFieldTypes,
   IDynamicFormField,
   IDynamicFormMaterialData,
-  IDynamicFormModel
+  IDynamicFormModel,
+  TDynamicFormUpdateModel
 } from "../../dynamic-form.interfaces";
 import AsyncAutocompleteComponent from "../../fields/async-autocomplete/async-autocomplete.component";
 import AutocompleteComponent from "../../fields/autocomplete/autocomplete.component";
@@ -24,7 +25,7 @@ class SelectDynamicFormFieldComponent extends Component<
   ISelectDynamicFormFieldComponentProps,
   {}
 > {
-  component() {
+  protected component() {
     const components: { [key: string]: any } = {
       [EDynamicFormFieldTypes.asyncAutocomplete]: AsyncAutocompleteComponent,
       [EDynamicFormFieldTypes.autocomplete]: AutocompleteComponent,
@@ -43,11 +44,17 @@ class SelectDynamicFormFieldComponent extends Component<
     };
     return components[this.props.field.component!];
   }
+
   render() {
     const Component = this.component();
     return (
       <div>
-        <Component />
+        <Component
+          field={this.props.field}
+          materialData={this.props.materialData}
+          model={this.props.model}
+          updateModel={this.props.updateModel}
+        />
       </div>
     );
   }
@@ -59,4 +66,5 @@ export interface ISelectDynamicFormFieldComponentProps {
   field: IDynamicFormField;
   materialData: IDynamicFormMaterialData;
   model: IDynamicFormModel;
+  updateModel: TDynamicFormUpdateModel;
 }

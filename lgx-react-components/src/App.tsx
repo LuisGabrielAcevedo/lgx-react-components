@@ -1,46 +1,39 @@
 import React, { Component } from "react";
-import { ELgxSortDirection, ILgxResponse } from "lgx-axios-dev-tools";
-import { Product } from "./models/admin-system/products";
 import DynamicFormComponent from "./lib/dymanic-form/dynamic-form.component";
 import countryFields from "./metadata/admin-system/form/countries";
+// import { Country } from "./models/admin-system/countries";
+// import { ILgxResponse } from "lgx-axios-dev-tools";
 
 class App extends Component {
-  public page = 1;
-  public perPage = 10;
+  public form!: DynamicFormComponent;
   state = {
-    products: []
+    country: {}
   };
 
   componentDidMount() {
-    this.loadProducts();
+    this.loadCountry();
   }
 
-  public async loadProducts() {
-    const resp: ILgxResponse = await Product.page(this.page)
-      .perPage(this.perPage)
-      .orderBy("updateAt", ELgxSortDirection.DESC)
-      .find();
-
-    this.setState({
-      products: resp.data
-    });
+  async loadCountry() {
+    // const resp: ILgxResponse = await Country.findById(
+    //   "5d80f84db1c0940017f88dfa"
+    // );
+    // this.setState({ country: resp.data });
   }
 
-  changePage(page: number) {
-    this.page = page;
-    this.loadProducts();
-  }
-
-  changePerPage(perPage: number) {
-    this.perPage = perPage;
-    this.loadProducts();
+  public async submit() {
+    // const resp = await this.form.submit();
   }
 
   render() {
     return (
       <div className="App">
         <DynamicFormComponent
+          ref={form => {
+            this.form = form!;
+          }}
           fieldsConfig={countryFields}
+          model={this.state.country}
         ></DynamicFormComponent>
       </div>
     );
