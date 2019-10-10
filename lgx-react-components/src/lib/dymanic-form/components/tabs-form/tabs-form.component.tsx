@@ -12,7 +12,7 @@ import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 import RowFormComponent from "../row-form/form-row.component";
 
-function TabPanel(props: any) {
+function TabPanel(props: TabPanelProps) {
   const { children, value, index } = props;
   return <div>{value === index ? <div>{children}</div> : null}</div>;
 }
@@ -65,4 +65,10 @@ export interface TabsFormComponentProps {
   materialData: IDynamicFormMaterialData;
   form: IDynamicFormGroup;
   updateModel: TDynamicFormUpdateModel;
+}
+
+export interface TabPanelProps {
+  value: number;
+  index: number;
+  children: any;
 }

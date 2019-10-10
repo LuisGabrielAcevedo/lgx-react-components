@@ -7,6 +7,7 @@ import {
   TDynamicFormUpdateModel,
   IDynamicFormGroup
 } from "../dynamic-form.interfaces";
+import "../dynamic-form.component.css";
 
 class DynamicFormFieldComponent extends Component<
   IDynamicFormFieldComponentProps,
@@ -51,9 +52,9 @@ class DynamicFormFieldComponent extends Component<
     super(props);
     this.state = {
       options: [],
-      loading: false
+      loading: false,
+      showPassword: false
     };
-    console.log(this.props);
   }
 
   public visible(currentModel: IDynamicFormModel): void {
@@ -80,7 +81,15 @@ class DynamicFormFieldComponent extends Component<
       : [];
   }
 
-  public handleChange = (event: any) => {
+  public handleChange = (event: React.ChangeEvent<any>) => {
+    this.updateModel(event.target.value);
+  };
+
+  public handleChangeCheked = (event: React.ChangeEvent<any>) => {
+    this.updateModel(event.target.checked);
+  };
+
+  public handleFocus = (event: React.FocusEvent<any>) => {
     this.updateModel(event.target.value);
   };
 
@@ -106,4 +115,5 @@ export interface IDynamicFormFieldComponentProps {
 export interface IDynamicFormFieldComponentState {
   options: IDynamicFormOption[];
   loading: boolean;
+  showPassword: boolean;
 }

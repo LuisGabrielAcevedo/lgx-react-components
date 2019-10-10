@@ -14,7 +14,7 @@ import StepsFormComponent from "./components/steps-form/steps-form.component";
 import TabsFormComponent from "./components/tabs-form/tabs-form.component";
 import SimpleFormComponent from "./components/simple-form/simple-form-component";
 import cloneDeep from "lodash/cloneDeep";
-// import set from "lodash/set";
+import set from "lodash/set";
 
 class DynamicFormComponent extends DynamicFormMixinComponent {
   componentDidMount() {
@@ -70,6 +70,7 @@ class DynamicFormComponent extends DynamicFormMixinComponent {
   private updateModel(key: string, value: any) {
     let form: IDynamicFormGroup = cloneDeep(this.state.form!);
     form.controls[key].value = value;
+    form.value = set(form.value, key!, value);
     form = this.validateControl(form, key);
     this.setState({ form });
   }

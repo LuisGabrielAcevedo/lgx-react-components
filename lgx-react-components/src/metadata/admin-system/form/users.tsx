@@ -6,7 +6,8 @@ import {
   EDynamicFormFieldTypes,
   IDynamicFormField,
   IDynamicFormLateralGroup,
-  DynamicFormValidators
+  DynamicFormValidators,
+  IDynamicFormModel
 } from "../../../lib";
 import { ILgxResponse } from "lgx-axios-dev-tools";
 
@@ -82,10 +83,11 @@ const userFields: IDynamicFormField[] = [
     name: "Active user",
     key: "isActive",
     component: EDynamicFormFieldTypes.switch,
+    validators: [DynamicFormValidators.required()],
     mainGroup: "App info",
     flexConfig: {
       row: 3,
-      flex: 12
+      flex: 2
     }
   },
   {
@@ -99,7 +101,7 @@ const userFields: IDynamicFormField[] = [
     },
     validators: [
       DynamicFormValidators.required({
-        message: "The field first name is required"
+        message: "The field first name is required."
       })
     ],
     options: {
@@ -140,13 +142,13 @@ const userFields: IDynamicFormField[] = [
     mainGroup: "Basic info",
     flexConfig: {
       row: 3,
-      flex: 12
+      flex: 2
     },
     options: {
       placeholder: "Select a type of document",
       fieldOptions: async () => [
-        { value: "dni", text: "DNI" },
-        { value: "passport", text: "Passport" }
+        { value: "DNI", text: "Dni" },
+        { value: "E", text: "Dni Extranjero" }
       ]
     }
   },
@@ -155,6 +157,27 @@ const userFields: IDynamicFormField[] = [
     key: "userInformation.documentNumber",
     component: EDynamicFormFieldTypes.textField,
     mainGroup: "Basic info",
+    validators: [
+      DynamicFormValidators.custom({
+        message: "The type of dni is invalid.",
+        errorName: "typeDni",
+        callback: (value: any, model: IDynamicFormModel) => {
+          const dni: number = +value;
+          const type: string = model.userInformation.documentType;
+          let valid: boolean = false;
+          if (dni && type) {
+            valid =
+              (type === "DNI" && dni < 90000000) ||
+              (type === "E" && dni >= 90000000);
+          }
+          return valid
+            ? null
+            : {
+                typeDni: true
+              };
+        }
+      })
+    ],
     flexConfig: {
       row: 3,
       flex: 4
@@ -181,6 +204,7 @@ const userFields: IDynamicFormField[] = [
     key: "userInformation.gender",
     component: EDynamicFormFieldTypes.radioGroup,
     mainGroup: "Basic info",
+    validators: [DynamicFormValidators.required()],
     flexConfig: {
       row: 4,
       flex: 12
@@ -198,8 +222,8 @@ const userFields: IDynamicFormField[] = [
     component: EDynamicFormFieldTypes.textField,
     mainGroup: "Basic info",
     validators: [
-      DynamicFormValidators.required({ message: "The email is required" })
-      // DynamicFormValidators.email()
+      DynamicFormValidators.required({ message: "The email is required" }),
+      DynamicFormValidators.email()
     ],
     options: {
       placeholder: "Write your email"
@@ -210,14 +234,16 @@ const userFields: IDynamicFormField[] = [
     key: "password",
     component: EDynamicFormFieldTypes.passwordField,
     mainGroup: "Basic info",
-    // validators: [
-    //     DynamicFormValidators.required({message: 'The field password is required'}),
-    //     DynamicFormValidators.minLength(10),
-    //     DynamicFormValidators.hasNumber(),
-    //     DynamicFormValidators.hasCapitalCase(),
-    //     DynamicFormValidators.hasSpecialCharacters(),
-    //     DynamicFormValidators.hasSmallCase()
-    // ],
+    validators: [
+      DynamicFormValidators.required({
+        message: "The field password is required"
+      }),
+      DynamicFormValidators.maxLength(10),
+      DynamicFormValidators.hasNumber(),
+      DynamicFormValidators.hasCapitalCase(),
+      DynamicFormValidators.hasSpecialCharacters(),
+      DynamicFormValidators.hasSmallCase()
+    ],
     options: {
       placeholder: "Write your password"
     }
@@ -227,10 +253,10 @@ const userFields: IDynamicFormField[] = [
     key: "confirm_password",
     component: EDynamicFormFieldTypes.passwordField,
     mainGroup: "Basic info",
-    // validators: [
-    //     DynamicFormValidators.required({message: 'The confirm is required'}),
-    //     DynamicFormValidators.confirm('password')
-    // ],
+    validators: [
+      DynamicFormValidators.required({ message: "The confirm is required" }),
+      DynamicFormValidators.confirm("password")
+    ],
     options: {
       placeholder: "Confirm your password"
     }
@@ -248,22 +274,22 @@ const userFields: IDynamicFormField[] = [
       placeholder: "Write your phone"
     }
   },
-  // {
-  //     name: 'Note',
-  //     key: 'userInformation.note',
-  //     component: EDynamicFormFieldTypes.textarea,
-  //     mainGroup: 'More info',
-  //     flexConfig: {
-  //         row: 3,
-  //         flex: 12
-  //     },
-  //     validators: [
-  //         DynamicFormValidators.required({message: 'The field note is required'})
-  //     ],
-  //     options: {
-  //         placeholder: 'Additional Information'
-  //     }
-  // },
+  {
+    name: "Note",
+    key: "userInformation.note",
+    component: EDynamicFormFieldTypes.textarea,
+    mainGroup: "More info",
+    flexConfig: {
+      row: 3,
+      flex: 12
+    },
+    validators: [
+      DynamicFormValidators.required({ message: "The field note is required" })
+    ],
+    options: {
+      placeholder: "Additional Information"
+    }
+  },
   {
     name: "Role",
     key: "role",

@@ -5,7 +5,7 @@ import {
 } from "../dynamic-form.interfaces";
 
 export class DynamicFormValidationsFunctions {
-  public static isRequiredValidator(
+  public static requiredValidator(
     error: IDynamicFormValidationErrors
   ): TDynamicFormValidatorFn {
     return (
@@ -17,6 +17,63 @@ export class DynamicFormValidationsFunctions {
       return valid ? null : error;
     };
   }
+
+  public static minLengthValidator(
+    limit: number,
+    error: IDynamicFormValidationErrors
+  ): TDynamicFormValidatorFn {
+    return (
+      value: any,
+      model: IDynamicFormModel
+    ): IDynamicFormValidationErrors | null => {
+      if (!value) return null;
+      const valid = value.length >= limit;
+      return valid ? null : error;
+    };
+  }
+
+  public static maxLengthValidator(
+    limit: number,
+    error: IDynamicFormValidationErrors
+  ): TDynamicFormValidatorFn {
+    return (
+      value: any,
+      model: IDynamicFormModel
+    ): IDynamicFormValidationErrors | null => {
+      if (!value) return null;
+      const valid = value.length < limit;
+      return valid ? null : error;
+    };
+  }
+
+  public static minValidator(
+    limit: number,
+    error: IDynamicFormValidationErrors
+  ): TDynamicFormValidatorFn {
+    return (
+      value: any,
+      model: IDynamicFormModel
+    ): IDynamicFormValidationErrors | null => {
+      if (!value) return null;
+      const valid = value >= limit;
+      return valid ? null : error;
+    };
+  }
+
+  public static maxValidator(
+    limit: number,
+    error: IDynamicFormValidationErrors
+  ): TDynamicFormValidatorFn {
+    return (
+      value: any,
+      model: IDynamicFormModel
+    ): IDynamicFormValidationErrors | null => {
+      if (!value) return null;
+      const valid = value <= limit;
+      return valid ? null : error;
+    };
+  }
+
   public static patternValidator(
     regex: RegExp,
     error: IDynamicFormValidationErrors

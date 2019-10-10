@@ -9,17 +9,12 @@ import FormHelperText from "@material-ui/core/FormHelperText";
 import Checkbox from "@material-ui/core/Checkbox";
 
 class EnumSelectComponent extends DynamicFormFieldComponent {
+  private getValue = () => this.value() || (this.multiple() ? [] : "");
   componentDidMount() {
     this.loadOptions();
   }
 
-  private getValue() {
-    return this.value() || (this.multiple() ? [] : "");
-  }
-
   render() {
-    const value = this.getValue();
-
     const error = this.errorValue() ? (
       <FormHelperText error={this.errorValue()}>
         {this.errorMessage()}
@@ -31,20 +26,23 @@ class EnumSelectComponent extends DynamicFormFieldComponent {
         <InputLabel htmlFor={this.label()}>{this.label()}</InputLabel>
         <Select
           multiple={this.multiple()}
-          value={value}
+          value={this.getValue()}
           onChange={this.handleChange}
-          onBlur={this.handleChange}
+          onBlur={this.handleFocus}
           error={this.errorValue()}
           renderValue={(formattedValue: any) =>
             this.multiple() ? formattedValue.join(",") : formattedValue
           }
         >
-          {this.state.options.map((option, i: number) => (
+          {this.state.options.map((option, i) => (
             <MenuItem key={i} value={option[this.associationValue()]}>
               {this.multiple() ? (
                 <Checkbox
                   color="primary"
-                  checked={value.indexOf(option[this.associationValue()]) > -1}
+                  checked={
+                    this.getValue().indexOf(option[this.associationValue()]) >
+                    -1
+                  }
                 />
               ) : null}
               <ListItemText primary={option[this.associationText()]} />

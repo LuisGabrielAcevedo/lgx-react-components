@@ -25,7 +25,7 @@ class DynamicFormMixinComponent extends Component<
   IDynamicFormComponentState
 > {
   public static defaultProps: IDynamicFormComponentProps = {
-    columns: 3,
+    columns: null,
     fieldsConfig: [],
     formType: EDynamicFormType.tabs,
     materialData: {},
@@ -44,7 +44,7 @@ class DynamicFormMixinComponent extends Component<
   public formatFieldsAction(
     fieldsConfig: IDynamicFormField[],
     currentModel: IDynamicFormModel,
-    columns?: number
+    columns?: number | null
   ): IDynamicFormFormatFieldsResponse {
     let mainGroupsFormatted: IDynamicFormMainGroup[] = [];
     let model: IDynamicFormModel = {};
@@ -106,7 +106,7 @@ class DynamicFormMixinComponent extends Component<
         mainGroupsFormatted.push(tabNewItem);
       }
     });
-    mainGroupsFormatted = this.buildColumns(mainGroupsFormatted, columns);
+    mainGroupsFormatted = this.buildColumns(mainGroupsFormatted, columns!);
     formGroup.value = Object.keys(currentModel!).length ? currentModel! : model;
     return {
       mainGroupsFormatted,
@@ -198,7 +198,7 @@ class DynamicFormMixinComponent extends Component<
     let dynamicFormFormattedValidations: TDynamicFormValidatorFn[] = [];
     field.validators!.forEach(validation => {
       dynamicFormFormattedValidations.push(validation.validate());
-      errorMessages[validation.name.toLowerCase()] = validation.message;
+      errorMessages[validation.name] = validation.message;
     });
     return {
       validations: dynamicFormFormattedValidations,
@@ -254,7 +254,7 @@ export default DynamicFormMixinComponent;
 export interface IDynamicFormComponentProps {
   model?: IDynamicFormModel;
   formType?: EDynamicFormType;
-  columns?: number;
+  columns?: number | null;
   materialData?: IDynamicFormMaterialData;
   formatId?: string;
   fieldsConfig: IDynamicFormField[];
