@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import DynamicFormComponent from "./lib/dymanic-form/dynamic-form.component";
-import userFields from "./metadata/admin-system/form/users";
+import userForm from "./metadata/admin-system/form/users";
 
 class App extends Component {
   public form!: DynamicFormComponent;
@@ -31,7 +31,7 @@ class App extends Component {
           ref={form => {
             this.form = form!;
           }}
-          fieldsConfig={userFields}
+          formConfig={userForm}
           model={this.state.user}
         ></DynamicFormComponent>
       </div>

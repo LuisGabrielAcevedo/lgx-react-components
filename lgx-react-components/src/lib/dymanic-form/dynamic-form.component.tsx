@@ -41,7 +41,8 @@ class DynamicFormComponent extends DynamicFormMixinComponent {
 
   public async submit(): Promise<IDynamicFormResponse> {
     let form: IDynamicFormGroup = cloneDeep(this.state.form!);
-    form = this.validateAll(form);
+    this.validateAll(form);
+    this.validateFormGroup(form);
     return {
       valid: form.valid,
       model: form.value
@@ -52,7 +53,7 @@ class DynamicFormComponent extends DynamicFormMixinComponent {
     model: IDynamicFormModel
   ): IDynamicFormFormatFieldsResponse {
     return this.formatFieldsAction(
-      this.props.fieldsConfig,
+      this.props.formConfig,
       model,
       this.props.columns
     );
@@ -71,7 +72,8 @@ class DynamicFormComponent extends DynamicFormMixinComponent {
     let form: IDynamicFormGroup = cloneDeep(this.state.form!);
     form.controls[key].value = value;
     form.value = set(form.value, key!, value);
-    form = this.validateControl(form, key);
+    this.validateControl(form, key);
+    this.validateFormGroup(form);
     this.setState({ form });
   }
 

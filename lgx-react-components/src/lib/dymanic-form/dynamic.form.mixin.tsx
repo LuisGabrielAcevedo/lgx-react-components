@@ -13,7 +13,8 @@ import {
   defaultDynamicFormControl,
   TDynamicFormValidatorFn,
   IDynamicFormFormattedValidations,
-  defaultDynamicFormGroup
+  defaultDynamicFormGroup,
+  IDynamicFormConfig
 } from "./dynamic-form.interfaces";
 import chunk from "lodash/chunk";
 import groupBy from "lodash/groupBy";
@@ -26,7 +27,9 @@ class DynamicFormMixinComponent extends Component<
 > {
   public static defaultProps: IDynamicFormComponentProps = {
     columns: null,
-    fieldsConfig: [],
+    formConfig: {
+      fieldsConfig: []
+    },
     formType: EDynamicFormType.tabs,
     materialData: {},
     model: {}
@@ -42,7 +45,7 @@ class DynamicFormMixinComponent extends Component<
   }
 
   public formatFieldsAction(
-    fieldsConfig: IDynamicFormField[],
+    formConfig: IDynamicFormConfig,
     currentModel: IDynamicFormModel,
     columns?: number | null
   ): IDynamicFormFormatFieldsResponse {
@@ -50,13 +53,14 @@ class DynamicFormMixinComponent extends Component<
     let model: IDynamicFormModel = {};
     let formGroup: IDynamicFormGroup = cloneDeep(defaultDynamicFormGroup);
     let order: number = 0;
-    fieldsConfig.forEach(field => {
+    formConfig.fieldsConfig.forEach(field => {
       let formControl: IDynamicFormControl = cloneDeep(
         defaultDynamicFormControl
       );
       formControl.key = field.key;
       formControl.value =
         currentModel![field.key] || field.defaultValue || null;
+
       if (field.validators) {
         const formattedValidationsResp: IDynamicFormFormattedValidations = this.formatValidations(
           field
@@ -79,7 +83,7 @@ class DynamicFormMixinComponent extends Component<
       );
       if (item) {
         if (group) {
-          group === IDynamicFormLateralGroup.left
+          group === IDynamicFormLateralGroup.LEFT
             ? item.leftFieldGroup!.push(field)
             : item.rightFieldGroup!.push(field);
         } else {
@@ -95,7 +99,7 @@ class DynamicFormMixinComponent extends Component<
           rightFieldGroup: []
         };
         if (group) {
-          group === IDynamicFormLateralGroup.left
+          group === IDynamicFormLateralGroup.LEFT
             ? tabNewItem.leftFieldGroup!.push(field)
             : tabNewItem.rightFieldGroup!.push(field);
         } else {
@@ -108,6 +112,9 @@ class DynamicFormMixinComponent extends Component<
     });
     mainGroupsFormatted = this.buildColumns(mainGroupsFormatted, columns!);
     formGroup.value = Object.keys(currentModel!).length ? currentModel! : model;
+    if (formConfig.validators && formConfig.validators.length) {
+      formGroup.validators = formConfig.validators;
+    }
     return {
       mainGroupsFormatted,
       formGroup
@@ -206,18 +213,41 @@ class DynamicFormMixinComponent extends Component<
     };
   }
 
-  public validateAll(form: IDynamicFormGroup): IDynamicFormGroup {
+  public validateAll(form: IDynamicFormGroup) {
     Object.keys(form.controls).forEach(key => {
-      form = this.validateControl(form, key);
+      this.validateControl(form, key);
     });
     this.setState({ form });
-    return form;
   }
 
-  public validateControl(
-    form: IDynamicFormGroup,
-    key: string
-  ): IDynamicFormGroup {
+  public validateFormGroup(form: IDynamicFormGroup) {
+    form.validators.forEach(validator => {
+      const valid: boolean = validator.callback(form.value);
+      validator.invalidFields.forEach(key => {
+        if (!valid) {
+          form.controls[key].errors = {
+            ...form.controls[key].errors,
+            [validator.errorName]: true
+          };
+          form.controls[key].errorMessages = {
+            ...form.controls[key].errorMessages,
+            [validator.errorName]: validator.message
+          };
+        } else {
+          delete form.controls[key].errors![validator.errorName];
+          delete form.controls[key].errorMessages![validator.errorName];
+        }
+        form.controls[key].valid = !Object.keys(form.controls[key].errors!)
+          .length;
+        form.invalidControls = Object.keys(form.controls[key].errors!).length
+          ? [...form.invalidControls, key]
+          : form.invalidControls.filter(controlkey => controlkey !== key);
+        form.valid = !form.invalidControls.length;
+      });
+    });
+  }
+
+  public validateControl(form: IDynamicFormGroup, key: string) {
     const errors: IDynamicFormValidationErrors = this.validate(
       form.controls[key],
       form.value
@@ -228,7 +258,6 @@ class DynamicFormMixinComponent extends Component<
       ? [...form.invalidControls, key]
       : form.invalidControls.filter(controlkey => controlkey !== key);
     form.valid = !form.invalidControls.length;
-    return form;
   }
 
   public validate(
@@ -257,7 +286,7 @@ export interface IDynamicFormComponentProps {
   columns?: number | null;
   materialData?: IDynamicFormMaterialData;
   formatId?: string;
-  fieldsConfig: IDynamicFormField[];
+  formConfig: IDynamicFormConfig;
 }
 
 export interface IDynamicFormComponentState {

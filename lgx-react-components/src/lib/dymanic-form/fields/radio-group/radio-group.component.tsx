@@ -19,7 +19,6 @@ class RadioGroupComponent extends DynamicFormFieldComponent {
         {this.errorMessage()}
       </FormHelperText>
     ) : null;
-    console.log(this.model());
     return (
       <FormControl fullWidth>
         <FormLabel

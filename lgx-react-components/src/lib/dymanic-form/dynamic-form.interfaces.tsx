@@ -1,14 +1,17 @@
 export type TDynamicFormUpdateModel = (key: string, value: any) => void;
 export type TDynamicFormVisibleCallback = (arg: IDynamicFormModel) => boolean;
 export type TDynamicFormDisableCallback = (arg: IDynamicFormModel) => boolean;
-export interface IDynamicFormValidationErrors {
-  [key: string]: any;
-}
+export type TDynamicFormErrorCallback = (arg: IDynamicFormModel) => boolean;
+export type TDynamicFormValidatorCallback = () => TDynamicFormValidatorFn;
 export type TDynamicFormValidatorFn = (
   value: any,
   model: IDynamicFormModel
 ) => IDynamicFormValidationErrors | null;
-export type TDynamicFormValidatorCallback = () => TDynamicFormValidatorFn;
+
+export interface IDynamicFormConfig {
+  fieldsConfig: IDynamicFormField[];
+  validators?: IDynamicFormGroupValidator[];
+}
 
 export interface IDynamicFormControl {
   value: any;
@@ -16,22 +19,36 @@ export interface IDynamicFormControl {
   valid: boolean;
   validators: TDynamicFormValidatorFn[];
   errorMessages?: IDynamicFormValidationErrors;
-  errors?: IDynamicFormValidationErrors;
+  errors: IDynamicFormValidationErrors;
   index?: number;
+}
+
+export interface IDynamicFormValidationErrors {
+  [key: string]: any;
 }
 
 export const defaultDynamicFormControl: IDynamicFormControl = {
   value: null,
   key: "",
   valid: true,
-  validators: []
+  validators: [],
+  errors: {}
 };
+
+export interface IDynamicFormGroupValidator {
+  message: string;
+  errorName: string;
+  invalidFields: string[];
+  callback: TDynamicFormErrorCallback;
+}
 
 export const defaultDynamicFormGroup: IDynamicFormGroup = {
   controls: {},
   value: {},
   valid: true,
-  invalidControls: []
+  validators: [],
+  invalidControls: [],
+  errors: {}
 };
 
 export interface IDynamicFormGroup {
@@ -40,6 +57,8 @@ export interface IDynamicFormGroup {
   };
   value: IDynamicFormModel;
   valid: boolean;
+  validators: IDynamicFormGroupValidator[];
+  errors: IDynamicFormValidationErrors;
   invalidControls: string[];
 }
 
@@ -121,8 +140,8 @@ export enum EDynamicFormImageComponentMode {
 }
 
 export enum IDynamicFormLateralGroup {
-  left = "LEFT",
-  right = "RIGHT"
+  LEFT = "LEFT",
+  RIGHT = "RIGHT"
 }
 
 export interface IDynamicFormFormattedValidations {
@@ -134,7 +153,6 @@ export interface IDynamicFormResponse {
   valid: boolean;
   model?: any;
   errors?: any;
-  editedFields?: IDynamicFormModel;
 }
 
 export interface IDynamicFormFormatFieldsResponse {

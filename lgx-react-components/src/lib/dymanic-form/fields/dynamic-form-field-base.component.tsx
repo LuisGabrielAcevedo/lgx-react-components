@@ -48,6 +48,25 @@ class DynamicFormFieldComponent extends Component<
     this.props.field.options && this.props.field.options.disableCondition;
   public hasVisibleCondition = () =>
     this.props.field.options && this.props.field.options.visibleCondition;
+  public handleChange = (event: React.ChangeEvent<any>) =>
+    this.updateModel(event.target.value);
+  public handleChangeCheked = (event: React.ChangeEvent<any>) =>
+    this.updateModel(event.target.checked);
+  public handleFocus = (event: React.FocusEvent<any>) =>
+    this.updateModel(event.target.value);
+  public updateModel = (value: any) =>
+    this.props.updateModel(this.key(), value);
+  public errorMessage = () =>
+    this.errorMessages()![Object.keys(this.errors()!)[0]];
+  public visible = (currentModel: IDynamicFormModel) =>
+    (this.visibleValue = !!this.props.field.options!.visibleCondition!(
+      currentModel
+    ));
+  public disable = (currentModel: IDynamicFormModel) =>
+    (this.disableValue = !!this.props.field.options!.disableCondition!(
+      currentModel
+    ));
+
   constructor(public props: IDynamicFormFieldComponentProps) {
     super(props);
     this.state = {
@@ -57,19 +76,7 @@ class DynamicFormFieldComponent extends Component<
     };
   }
 
-  public visible(currentModel: IDynamicFormModel): void {
-    this.visibleValue = !!this.props.field.options!.visibleCondition!(
-      currentModel
-    );
-  }
-
-  public disable(currentModel: IDynamicFormModel): void {
-    this.disableValue = !!this.props.field.options!.disableCondition!(
-      currentModel
-    );
-  }
-
-  async loadOptions() {
+  public async loadOptions(): Promise<any> {
     this.setState({ loading: true });
     const options: IDynamicFormOption[] = await this.loadFieldOptions();
     this.setState({ options, loading: false });
@@ -79,27 +86,6 @@ class DynamicFormFieldComponent extends Component<
     return this.props.field.options && this.props.field.options!.fieldOptions
       ? await this.props.field.options!.fieldOptions(value)
       : [];
-  }
-
-  public handleChange = (event: React.ChangeEvent<any>) => {
-    this.updateModel(event.target.value);
-  };
-
-  public handleChangeCheked = (event: React.ChangeEvent<any>) => {
-    this.updateModel(event.target.checked);
-  };
-
-  public handleFocus = (event: React.FocusEvent<any>) => {
-    this.updateModel(event.target.value);
-  };
-
-  public updateModel(value: any) {
-    this.props.updateModel(this.key(), value);
-  }
-
-  public errorMessage(): string {
-    const error: string = Object.keys(this.errors()!)[0];
-    return this.errorMessages()![error];
   }
 }
 

@@ -37,7 +37,7 @@ export class DynamicFormValidators {
       message || `The field must have at least ${value} characters`,
       () =>
         DynamicFormValidationsFunctions.minLengthValidator(value, {
-          minlength: true
+          minLength: true
         })
     );
   }
@@ -53,7 +53,7 @@ export class DynamicFormValidators {
       message || `The field must have less than ${value} characters.`,
       () =>
         DynamicFormValidationsFunctions.maxLengthValidator(value, {
-          maxlength: true
+          maxLength: true
         })
     );
   }
@@ -94,7 +94,7 @@ export class DynamicFormValidators {
         : "The field must have at least one number.",
       () =>
         DynamicFormValidationsFunctions.patternValidator(/\d/, {
-          hasnumber: true
+          hasNumber: true
         })
     );
   }
@@ -109,7 +109,7 @@ export class DynamicFormValidators {
         : "The field must have at least one capital letter.",
       () =>
         DynamicFormValidationsFunctions.patternValidator(/[A-Z]/, {
-          hascapitalcase: true
+          hasCapitalCase: true
         })
     );
   }
@@ -124,7 +124,7 @@ export class DynamicFormValidators {
         : "The field must have at all capital letters.",
       () =>
         DynamicFormValidationsFunctions.patternValidator(/^[A-Z ]+$/, {
-          onlycapitalcase: true
+          onlyCapitalCase: true
         })
     );
   }
@@ -139,7 +139,7 @@ export class DynamicFormValidators {
         : "The field must have at least one small letter.",
       () =>
         DynamicFormValidationsFunctions.patternValidator(/[a-z]/, {
-          hassmallcase: true
+          hasSmallCase: true
         })
     );
   }
@@ -155,7 +155,7 @@ export class DynamicFormValidators {
       () =>
         DynamicFormValidationsFunctions.patternValidator(
           /[*@!#%&()^~{},.?¿¡]+/,
-          { hasspecialcharacters: true }
+          { hasSpecialCharacters: true }
         )
     );
   }
@@ -176,8 +176,8 @@ export class DynamicFormValidators {
     );
   }
 
-  public static custom(
-    data: IDynamicFormCustomValidatorData
+  public static controlValidator(
+    data: IDynamicFormControlValidatorData
   ): DynamicFormValidator {
     return new DynamicFormValidator(
       data.errorName,
@@ -203,7 +203,7 @@ export interface IDynamicFormValidatorDataWithField
   field: string;
 }
 
-export interface IDynamicFormCustomValidatorData {
+export interface IDynamicFormControlValidatorData {
   message: string;
   errorName: string;
   callback: TDynamicFormValidatorFn;
