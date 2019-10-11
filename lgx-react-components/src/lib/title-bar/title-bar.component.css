@@ -1,0 +1,10 @@
+.title-bar-header {
+  border-bottom: 1px solid #dee2e6;
+  padding: 12px 14px;
+  margin-bottom: 20px;
+  height: 60px;
+}
+
+.title-bar-title {
+  margin: 0px;
+}

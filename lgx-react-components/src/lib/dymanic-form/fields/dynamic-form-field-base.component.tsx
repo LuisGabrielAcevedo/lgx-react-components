@@ -71,8 +71,11 @@ class DynamicFormFieldComponent extends Component<
     super(props);
     this.state = {
       options: [],
+      filteredOptions: [],
       loading: false,
-      showPassword: false
+      showPassword: false,
+      single: "",
+      poper: ""
     };
   }
 
@@ -100,6 +103,9 @@ export interface IDynamicFormFieldComponentProps {
 
 export interface IDynamicFormFieldComponentState {
   options: IDynamicFormOption[];
+  filteredOptions: IDynamicFormOption[];
   loading: boolean;
   showPassword: boolean;
+  single?: any;
+  poper?: any;
 }

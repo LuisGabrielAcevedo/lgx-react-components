@@ -1,8 +1,8 @@
 import DynamicFormFieldComponent from "../dynamic-form-field-base.component";
+import React from "react";
 import Input from "@material-ui/core/Input";
 import InputLabel from "@material-ui/core/InputLabel";
 import FormControl from "@material-ui/core/FormControl";
-import React from "react";
 import FormHelperText from "@material-ui/core/FormHelperText";
 
 class TextFieldComponent extends DynamicFormFieldComponent {

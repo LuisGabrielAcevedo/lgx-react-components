@@ -1,6 +1,7 @@
 import React, { Component } from "react";
-import DynamicFormComponent from "./lib/dymanic-form/dynamic-form.component";
+import { DynamicFormComponent, TitleBarComponent } from "./lib";
 import userForm from "./metadata/admin-system/form/users";
+import Fab from "@material-ui/core/Fab";
 
 class App extends Component {
   public form!: DynamicFormComponent;
@@ -27,6 +28,19 @@ class App extends Component {
   render() {
     return (
       <div className="App">
+        <TitleBarComponent
+          title="User"
+          right={
+            <div>
+              <Fab size="small" color="primary">
+                check
+              </Fab>
+              <Fab size="small" color="primary">
+                close
+              </Fab>
+            </div>
+          }
+        />
         <DynamicFormComponent
           ref={form => {
             this.form = form!;

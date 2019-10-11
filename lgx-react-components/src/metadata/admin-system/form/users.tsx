@@ -34,10 +34,7 @@ const userForm: IDynamicFormConfig = {
       options: {
         placeholder: "Select a company",
         fieldOptions: async arg => {
-          const resp: ILgxResponse = await Company.option(
-            "search",
-            arg
-          ).findRx();
+          const resp: ILgxResponse = await Company.option("search", arg).find();
           return resp.data;
         },
         associationText: "name",
@@ -47,7 +44,7 @@ const userForm: IDynamicFormConfig = {
     {
       name: "Application",
       key: "application",
-      component: EDynamicFormFieldTypes.asyncAutocomplete,
+      component: EDynamicFormFieldTypes.autocomplete,
       mainGroup: "App info",
       flexConfig: {
         row: 2,
@@ -55,10 +52,9 @@ const userForm: IDynamicFormConfig = {
       },
       options: {
         fieldOptions: async arg => {
-          const resp: ILgxResponse = await Application.option(
-            "search",
-            arg
-          ).findRx();
+          const resp: ILgxResponse = arg
+            ? await Application.filter("company", arg).find()
+            : await Application.find();
           return resp.data;
         },
         placeholder: "Select a application",
@@ -286,8 +282,9 @@ const userForm: IDynamicFormConfig = {
       options: {
         placeholder: "Select a role",
         fieldOptions: async arg => {
-          let resp: ILgxResponse;
-          resp = arg ? Role.filter("company", arg).find() : Role.findRx();
+          const resp: ILgxResponse = arg
+            ? await Role.filter("company", arg).find()
+            : await Role.find();
           return resp.data;
         },
         associationText: "name",
@@ -303,8 +300,9 @@ const userForm: IDynamicFormConfig = {
       options: {
         placeholder: "Select a store",
         fieldOptions: async arg => {
-          let resp: ILgxResponse;
-          resp = arg ? Store.filter("company", arg).find() : Store.findRx();
+          const resp: ILgxResponse = (await arg)
+            ? Store.filter("company", arg).find()
+            : await Store.find();
           return resp.data;
         },
         associationText: "name",

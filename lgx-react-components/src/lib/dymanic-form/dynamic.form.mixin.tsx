@@ -217,7 +217,6 @@ class DynamicFormMixinComponent extends Component<
     Object.keys(form.controls).forEach(key => {
       this.validateControl(form, key);
     });
-    this.setState({ form });
   }
 
   public validateFormGroup(form: IDynamicFormGroup) {

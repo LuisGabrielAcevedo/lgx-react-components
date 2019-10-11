@@ -43,6 +43,7 @@ class DynamicFormComponent extends DynamicFormMixinComponent {
     let form: IDynamicFormGroup = cloneDeep(this.state.form!);
     this.validateAll(form);
     this.validateFormGroup(form);
+    this.setState({ form });
     return {
       valid: form.valid,
       model: form.value
